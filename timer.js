@@ -24,7 +24,7 @@ function ProgressTimer(options) {
     this._updateRate = Math.max(options.updateRate || 100, 10);
     this._callback = options.callback || function() {};
     this._fallback = typeof window.requestAnimationFrame === 'undefined' ||
-                     options.fallback || false;
+                     options.disableRequestAnimationFrame|| false;
 
     if (!this._fallback) {
         this._initialUpdate = this._scheduleAnimationFrame;

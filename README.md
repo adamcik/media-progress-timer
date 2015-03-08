@@ -21,23 +21,21 @@ Install
 -------
 
 There are no fancy build commands or minified versions. Just use the source
-file as it is or include it with ``require.js``.
+file as it is or your module loader of choice.
 
-However, if you use an npm based build system you can use:
-
-    npm install media-progress-timer
+There is also an NPM package at https://www.npmjs.com/package/media-progress-timer
 
 Usage
 -----
-
-    var ProgresTimer = require('media-progress-timer');
 
     var timer = ProgressTimer({
         callback: function(position, duration) {
             // update your UI state in this funcion as need be
         },
-        updateRate: 10,  // min number of ms between callbacks
-        fallback: false  // force setTimeout based legacy mode
+	// Target number of milliseconds between callbacks.
+        updateRate: 10,
+        // Force the use of the legacy setTimeout fallback.
+        disableRequestAnimationFrame: false
     });
 
     // Call with position, duration. Both arguments are optional.
@@ -49,12 +47,16 @@ Usage
     // Resets the timer to a "blank" state.
     timer.reset();
 
+
+``ProgressTimer`` can also be called with just the callback if no other options
+are needed.
+
 Background
 ----------
 
-This helper was created in order to help mopidy client developers handle time
+This helper was created in order to help Mopidy client developers handle time
 better as too many of the clients have been constantly polling for the current
 time position to "fix" the drifting.
 
-There is nothing mopidy, or even media specific about this code so if it comes
+There is nothing Mopidy, or even media specific about this code so if it comes
 in handy for some other use cases then awesome :-)
