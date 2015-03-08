@@ -1,0 +1,15 @@
+{
+  "author": "Thomas Adamcik <thomas@adamcik.no>",
+  "name": "media-progress-timer",
+  "description": "Accurate progress timer for web based media control",
+  "version": "1.0.0",
+  "homepage": "http://github.com/adamcik/media-progress-timer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/adamcik/media-progress-timer.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {}
+}
