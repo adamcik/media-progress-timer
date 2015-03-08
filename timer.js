@@ -1,5 +1,5 @@
 /*! timer.js v1.0
- * http://www.mopidy.com/
+ * https://github.com/adamcik/media-progress-timer
  * Copyright (c) 2015 Thomas Adamcik
  * Licensed under the Apache License, Version 2.0 */
 
