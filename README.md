@@ -32,7 +32,7 @@ Usage
         callback: function(position, duration) {
             // update your UI state in this funcion as need be
         },
-	// Target number of milliseconds between callbacks.
+        // Target number of milliseconds between callbacks.
         updateRate: 10,
         // Force the use of the legacy setTimeout fallback.
         disableRequestAnimationFrame: false
