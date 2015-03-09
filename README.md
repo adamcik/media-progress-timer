@@ -44,6 +44,9 @@ Usage
     // Stops the timer preventing any further callbacks.
     timer.stop();
 
+    // Continue from the position of the last stop.
+    timer.resume();
+
     // Resets the timer to a "blank" state.
     timer.reset();
 

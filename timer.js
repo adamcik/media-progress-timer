@@ -38,13 +38,18 @@ ProgressTimer.prototype.start = function(position, duration) {
     this._initialUpdate();
 };
 
+ProgressTimer.prototype.resume = function() {
+    if (this._stopped) {
+        this.start(this._previousPosition, this._duration);
+    }
+};
+
 ProgressTimer.prototype.stop = function() {
     this._stopped = true;
 };
 
 ProgressTimer.prototype.reset = function() {
-    this._stopped = true;
-    this._callback(0, 0);
+    this._start(0, 0);
 };
 
 ProgressTimer.prototype._initialize = function(position, duration) {
@@ -91,6 +96,7 @@ ProgressTimer.prototype._update = function(timestamp) {
         }
         this._scheduleUpdate();
     } else {
+        this._stopped = true;
         this._callback(this._duration, this._duration);
     }
 };
