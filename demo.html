@@ -19,6 +19,7 @@
       }
     </style>
     <script type="text/javascript">
+      var timers = [];
       window.onload = function() {
         var examples = document.querySelectorAll('.example');
         for (var i=0; i < examples.length; i++) {
@@ -41,6 +42,7 @@
             });
             timer.start(parseInt(example.dataset.position) || null,
                         parseInt(example.dataset.duration) || null);
+            timers.push(timer);
           }(examples[i]));
         }
       };
