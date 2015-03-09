@@ -13,9 +13,9 @@ a reference time and quickly drifts out of sync. To avoid this the library:
 - Uses ``requestAnimationFrame`` for performance / battery friendly updates.
 - Supports a legacy ``setTimeout`` based fallback mode.
 
-Obviously there is still a chance the remote side and the web application
-drifting, but with these measures in place polling code that resynchronizes
-can be run a lot less frequently.
+Obviously there is still a chance that the remote side and the web application
+drift apart. With these measures polling code that resynchronizes can be run a
+lot less frequently, possibly even removed.
 
 Install
 -------
