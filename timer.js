@@ -1,4 +1,4 @@
-/*! timer.js v1.0
+/*! timer.js v1.1.1
  * https://github.com/adamcik/media-progress-timer
  * Copyright (c) 2015 Thomas Adamcik
  * Licensed under the Apache License, Version 2.0 */
@@ -49,7 +49,7 @@ ProgressTimer.prototype.stop = function() {
 };
 
 ProgressTimer.prototype.reset = function() {
-    this._start(0, 0);
+    this.start(0, 0);
 };
 
 ProgressTimer.prototype._initialize = function(position, duration) {
