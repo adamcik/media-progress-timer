@@ -4,6 +4,9 @@
     <title>Progress timer demo</title>
     <script type="text/javascript" src="https://rawgit.com/adamcik/media-progress-timer/master/timer.js"></script>
     <style type="text/css">
+      body {
+        font-family: sans-serif;
+      }
       .progress {
         height: 10px;
         width: 100%;
@@ -19,6 +22,7 @@
       }
     </style>
     <script type="text/javascript">
+      var timers = [];
       window.onload = function() {
         var examples = document.querySelectorAll('.example');
         for (var i=0; i < examples.length; i++) {
@@ -39,13 +43,18 @@
                 },
                 updateRate: 10
             });
-            timer.start(parseInt(example.dataset.position) || null,
-                        parseInt(example.dataset.duration) || null);
+            timer.set(parseInt(example.dataset.position) || null,
+                      parseInt(example.dataset.duration) || null).start();
+            timers.push(timer);
           }(examples[i]));
         }
       };
 
       function format(milliseconds) {
+        if (milliseconds === Infinity) {
+          return '00:00:000';
+        }
+
         var seconds = Math.floor(milliseconds / 1000);
         milliseconds = milliseconds % 1000;
         var minutes = Math.floor(seconds / 60);
@@ -67,19 +76,19 @@
       https://github.com/adamcik/media-progress-timer</a>
     </p>
 
-    <code>timer.start()</code>
-    <div class="example">
+    <code>timer.set(0, null).start()</code>
+    <div class="example" data-position="0">
       <div class="progress"><div></div></div>
       <span class="duration">00:00:000</span>
       <span class="position">00:00:000</span>
     </div>
-    <code>timer.start(0, 30000)</code>
+    <code>timer.set(0, 30000).start()</code>
     <div class="example" data-position="0" data-duration="30000">
       <div class="progress"><div></div></div>
       <span class="duration">00:00:000</span>
       <span class="position">00:00:000</span>
     </div>
-    <code>timer.start(15000, 50000)</code>
+    <code>timer.set(15000, 50000).start()</code>
     <div class="example" data-position="15000" data-duration="50000">
       <div class="progress"><div></div></div>
       <span class="duration">00:00:000</span>
