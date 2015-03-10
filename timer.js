@@ -61,12 +61,19 @@ ProgressTimer.prototype.reset = function() {
 };
 
 ProgressTimer.prototype._initialize = function(position, duration) {
+    position = Math.max(position || 0, 0);
+    if (typeof duration === 'number') {
+        duration = Math.max(duration, 0);
+        position = Math.min(position, duration);
+    } else {
+        duration = null;
+    }
     return {
         initialTimestamp: null,
         previousTimestamp: null,
-        initialPosition: Math.max(position || 0, 0),
-        previousPosition: null,
-        duration: typeof duration === 'number' ? Math.max(duration, 0) : null
+        initialPosition: position,
+        previousPosition: position,
+        duration: duration
     };
 };
 
