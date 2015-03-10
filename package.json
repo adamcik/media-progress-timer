@@ -2,7 +2,7 @@
   "author": "Thomas Adamcik <thomas@adamcik.no>",
   "name": "media-progress-timer",
   "description": "Accurate progress timer for web based media control",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "homepage": "http://github.com/adamcik/media-progress-timer",
   "repository": {
     "type": "git",
