@@ -43,9 +43,10 @@ ProgressTimer.prototype.set = function(position, duration) {
     } else if (arguments.length === 1) {
         duration = this._state.duration;
     } else {
-        duration = Math.max(duration === null ? Infinity : duration || 0, 0);
+        duration = Math.floor(
+            Math.max(duration === null ? Infinity : duration || 0, 0));
     }
-    position = Math.min(Math.max(position || 0, 0), duration);
+    position = Math.floor(Math.min(Math.max(position || 0, 0), duration));
 
     this._state = {
         initialTimestamp: null,
