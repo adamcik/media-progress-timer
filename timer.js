@@ -5,7 +5,7 @@
 
 (function() {
 
-"use strict";
+'use strict';
 
 var now = typeof window.performance !== 'undefined' &&
           typeof window.performance.now !== 'undefined' &&
@@ -18,9 +18,9 @@ function ProgressTimer(options) {
     } else if (typeof options === 'function') {
         options = {'callback': options};
     } else if (typeof options !== 'object') {
-        throw "ProgressTimer must be called with a callback or options.";
+        throw 'ProgressTimer must be called with a callback or options.';
     } else if (typeof options.callback !== 'function') {
-        throw "ProgressTimer needs a callback to operate.";
+        throw 'ProgressTimer needs a callback to operate.';
     }
 
     this._running = false;
@@ -116,7 +116,7 @@ ProgressTimer.prototype._update = function(timestamp) {
     }
 };
 
-if(typeof module !== "undefined"){
+if(typeof module !== 'undefined'){
     module.exports = ProgressTimer;
 }
 else{
