@@ -20,7 +20,8 @@ function ProgressTimer(options) {
         options = {'callback': options};
     }
 
-    this._state = this._initialize(null, null, false);
+    this._state = this._initialize(null, null);
+    this._running = false;
     this._updateRate = Math.max(options.updateRate || 100, 10);
     this._callback = options.callback || function() {};
     this._fallback = typeof window.requestAnimationFrame === 'undefined' ||
@@ -33,29 +34,29 @@ function ProgressTimer(options) {
 }
 
 ProgressTimer.prototype.start = function(position, duration) {
-    this._state = this._initialize(position, duration, true);
+    this._state = this._initialize(position, duration);
     this._callback(this._initialPosition, this._duration);
+    this._running = true;
     this._initialUpdate();
 };
 
 ProgressTimer.prototype.resume = function() {
-    var state = this._state;
-    if (!state.running) {
+    if (!this._running) {
+        var state = this._state;
         this.start(state.previousPosition, state.duration);
     }
 };
 
 ProgressTimer.prototype.stop = function() {
-    this._state.running = false;
+    this._running = false;
 };
 
 ProgressTimer.prototype.reset = function() {
     this.start(0, 0);
 };
 
-ProgressTimer.prototype._initialize = function(position, duration, running) {
+ProgressTimer.prototype._initialize = function(position, duration) {
     return {
-        running: running || false,
         initialTimestamp: null,
         previousTimestamp: null,
         initialPosition: Math.max(position || 0, 0),
@@ -80,7 +81,7 @@ ProgressTimer.prototype._scheduleAnimationFrame = function(state) {
 };
 
 ProgressTimer.prototype._update = function(timestamp) {
-    if (!this._state.running) {
+    if (!this._running) {
         return;
     }
 
@@ -99,7 +100,7 @@ ProgressTimer.prototype._update = function(timestamp) {
         }
         this._scheduleUpdate(state);
     } else {
-        state.running = false;
+        this._running = false;
         this._callback(state.duration, state.duration);
     }
 };
