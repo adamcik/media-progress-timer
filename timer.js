@@ -18,12 +18,17 @@ function ProgressTimer(options) {
     }
     if (typeof options === 'function') {
         options = {'callback': options};
+    } else if (typeof options !== 'object') {
+        throw "ProgressTimer must be called with a callback or options.";
+    }
+    if (typeof options.callback !== 'function') {
+        throw "ProgressTimer needs a callback to operate.";
     }
 
     this._state = this._initialize(null, null);
     this._running = false;
     this._updateRate = Math.max(options.updateRate || 100, 10);
-    this._callback = options.callback || function() {};
+    this._callback = options.callback;
     this._fallback = typeof window.requestAnimationFrame === 'undefined' ||
                      options.disableRequestAnimationFrame|| false;
 
