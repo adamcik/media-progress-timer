@@ -9,7 +9,7 @@
 
 var now = typeof window.performance !== 'undefined' &&
           typeof window.performance.now !== 'undefined' &&
-          window.performance.now || Date.now ||
+          window.performance.now.bind(window.performance) || Date.now ||
           function() { return new Date().getTime(); };
 
 function ProgressTimer(options) {
