@@ -77,14 +77,12 @@ ProgressTimer.prototype.reset = function() {
 };
 
 ProgressTimer.prototype._initialUpdate = function(state) {
-    this._update(now());
+    this._update();
 };
 
 ProgressTimer.prototype._scheduleUpdate = function(state) {
     var adjustedTimeout = state.previousTimestamp + this._updateRate - now();
-    setTimeout((function() {
-        this._update(now());
-    }).bind(this), adjustedTimeout);
+    setTimeout(this._update.bind(this), adjustedTimeout);
 };
 
 ProgressTimer.prototype._scheduleAnimationFrame = function(state) {
@@ -95,6 +93,8 @@ ProgressTimer.prototype._update = function(timestamp) {
     if (!this._running) {
         return;
     }
+
+    timestamp = typeof timestamp !== 'undefined' ? timestamp : now();
 
     var state = this._state;
     state.initialTimestamp = state.initialTimestamp || timestamp;
