@@ -29,30 +29,39 @@ Usage
 -----
 
     var timer = ProgressTimer({
+        // Your callback for updating UI state, required.
         callback: function(position, duration) {
-            // update your UI state in this funcion as need be
         },
-        // Target number of milliseconds between callbacks.
+        // Target milliseconds between callbacks, default: 100, min: 10.
         updateRate: 10,
-        // Force the use of the legacy setTimeout fallback.
+        // Force the use of the legacy setTimeout fallback, default: false.
         disableRequestAnimationFrame: false
     });
 
-    // Call with position, duration. Both arguments are optional.
-    timer.start(0, 60000);
+    // When playback starts set the timer and start it:
+    timer.set(0, 60000).start();
 
-    // Stops the timer preventing any further callbacks.
+    // When playback pauses, stop the timer:
     timer.stop();
 
-    // Continue from the position of the last stop.
-    timer.resume();
+    // When playback resumes, start the timer:
+    timer.start();
 
-    // Resets the timer to a "blank" state.
+    // When a seek event occours update the position:
+    timer.set(position)
+
+    // When playback stops, reset the timer.
     timer.reset();
 
-
-``ProgressTimer`` can also be called with just the callback if no other options
-are needed.
+- Just running ``new ProgressTimer(callback)`` is also possible if you don't
+  want to set any options.
+- All function return `this` and are thus chainable.
+- The initial state of the timer is a position of zero and an infinite duration.
+- For the ``set`` call you may omit duration, in this case the timer will
+  continue using the previous duration.
+- Positions will always be normalized to a number between zero and duration.
+- Durations will be normalized to a number between zero and infinite, null is
+  considered an alias for infinite.
 
 Background
 ----------

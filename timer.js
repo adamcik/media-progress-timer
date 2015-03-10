@@ -15,17 +15,14 @@ var now = typeof window.performance !== 'undefined' &&
 function ProgressTimer(options) {
     if (!(this instanceof ProgressTimer)) {
         return new ProgressTimer(options);
-    }
-    if (typeof options === 'function') {
+    } else if (typeof options === 'function') {
         options = {'callback': options};
     } else if (typeof options !== 'object') {
         throw "ProgressTimer must be called with a callback or options.";
-    }
-    if (typeof options.callback !== 'function') {
+    } else if (typeof options.callback !== 'function') {
         throw "ProgressTimer needs a callback to operate.";
     }
 
-    this._state = this._initialize(null, null);
     this._running = false;
     this._updateRate = Math.max(options.updateRate || 100, 10);
     this._callback = options.callback;
@@ -36,52 +33,50 @@ function ProgressTimer(options) {
         this._initialUpdate = this._scheduleAnimationFrame;
         this._scheduleUpdate = this._scheduleAnimationFrame;
     }
+
+    this.reset();
 }
 
-ProgressTimer.prototype.start = function(position, duration) {
-    this._state = this._initialize(position, duration);
-    this._callback(this._initialPosition, this._duration);
-    this._running = true;
-    this._initialUpdate();
-    return this;
-};
-
-ProgressTimer.prototype.resume = function() {
-    if (!this._running) {
-        var state = this._state;
-        this.start(state.previousPosition, state.duration);
-    }
-    return this;
-};
-
-ProgressTimer.prototype.stop = function() {
-    this._running = false;
-    return this;
-};
-
-ProgressTimer.prototype.reset = function() {
-    this.start(0, 0);
-    return this;
-};
-
-ProgressTimer.prototype._initialize = function(position, duration) {
-    position = Math.max(position || 0, 0);
-    if (typeof duration === 'number') {
-        duration = Math.max(duration, 0);
-        position = Math.min(position, duration);
+ProgressTimer.prototype.set = function(position, duration) {
+    if (arguments.length === 0) {
+        throw 'set requires at least a position argument.';
+    } else if (arguments.length === 1) {
+        duration = this._state.duration;
     } else {
-        duration = null;
+        duration = Math.max(duration === null ? Infinity : duration || 0, 0);
     }
-    return {
+    position = Math.min(Math.max(position || 0, 0), duration);
+
+    this._state = {
         initialTimestamp: null,
         previousTimestamp: null,
         initialPosition: position,
         previousPosition: position,
         duration: duration
     };
+
+    this._callback(position, duration);
+    return this;
 };
 
-ProgressTimer.prototype._initialUpdate = function() {
+ProgressTimer.prototype.start = function() {
+    this._running = true;
+    this._initialUpdate(this._state);
+    return this;
+};
+
+ProgressTimer.prototype.stop = function() {
+    this._running = false;
+    var state = this._state;
+    return this.set(state.previousPosition, state.duration);
+};
+
+ProgressTimer.prototype.reset = function() {
+    this._running = false;
+    return this.set(0, Infinity);
+};
+
+ProgressTimer.prototype._initialUpdate = function(state) {
     this._update(now());
 };
 
