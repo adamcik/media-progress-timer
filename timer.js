@@ -20,7 +20,7 @@ function ProgressTimer(options) {
         options = {'callback': options};
     }
 
-    this._initialize(null, null);
+    this._state = this._initialize(null, null, false);
     this._updateRate = Math.max(options.updateRate || 100, 10);
     this._callback = options.callback || function() {};
     this._fallback = typeof window.requestAnimationFrame === 'undefined' ||
@@ -33,71 +33,74 @@ function ProgressTimer(options) {
 }
 
 ProgressTimer.prototype.start = function(position, duration) {
-    this._initialize(position, duration);
+    this._state = this._initialize(position, duration, true);
     this._callback(this._initialPosition, this._duration);
     this._initialUpdate();
 };
 
 ProgressTimer.prototype.resume = function() {
-    if (this._stopped) {
-        this.start(this._previousPosition, this._duration);
+    var state = this._state;
+    if (!state.running) {
+        this.start(state.previousPosition, state.duration);
     }
 };
 
 ProgressTimer.prototype.stop = function() {
-    this._stopped = true;
+    this._state.running = false;
 };
 
 ProgressTimer.prototype.reset = function() {
     this.start(0, 0);
 };
 
-ProgressTimer.prototype._initialize = function(position, duration) {
-    this._initialTimestamp = null;
-    this._previousTimestamp = null;
-    this._initialPosition = Math.max(position || 0, 0);
-    this._previousPosition = null;
-    this._duration =
-        typeof duration === 'number' ? Math.max(duration, 0) : null;
-    this._stopped = false;
+ProgressTimer.prototype._initialize = function(position, duration, running) {
+    return {
+        running: running || false,
+        initialTimestamp: null,
+        previousTimestamp: null,
+        initialPosition: Math.max(position || 0, 0),
+        previousPosition: null,
+        duration: typeof duration === 'number' ? Math.max(duration, 0) : null
+    };
 };
 
 ProgressTimer.prototype._initialUpdate = function() {
     this._update(now());
 };
 
-ProgressTimer.prototype._scheduleUpdate = function(first) {
-    var adjustedTimeout = this._previousTimestamp + this._updateRate - now();
+ProgressTimer.prototype._scheduleUpdate = function(state) {
+    var adjustedTimeout = state.previousTimestamp + this._updateRate - now();
     setTimeout((function() {
         this._update(now());
     }).bind(this), adjustedTimeout);
 };
 
-ProgressTimer.prototype._scheduleAnimationFrame = function() {
+ProgressTimer.prototype._scheduleAnimationFrame = function(state) {
     window.requestAnimationFrame(this._update.bind(this));
 };
 
 ProgressTimer.prototype._update = function(timestamp) {
-    if (this._stopped) {
+    if (!this._state.running) {
         return;
     }
 
-    this._initialTimestamp = this._initialTimestamp || timestamp;
-    this._previousTimestamp = timestamp;
+    var state = this._state;
+    state.initialTimestamp = state.initialTimestamp || timestamp;
+    state.previousTimestamp = timestamp;
 
     var position = Math.floor(
-        this._initialPosition + (timestamp - this._initialTimestamp));
+        state.initialPosition + (timestamp - state.initialTimestamp));
 
-    if (this._duration === null || position < this._duration) {
-        var delta = position - this._previousPosition;
+    if (state.duration === null || position < state.duration) {
+        var delta = position - state.previousPosition;
         if (this._fallback || delta >= this._updateRate) {
-            this._callback(position, this._duration);
-            this._previousPosition = position;
+            this._callback(position, state.duration);
+            state.previousPosition = position;
         }
-        this._scheduleUpdate();
+        this._scheduleUpdate(state);
     } else {
-        this._stopped = true;
-        this._callback(this._duration, this._duration);
+        state.running = false;
+        this._callback(state.duration, state.duration);
     }
 };
 
