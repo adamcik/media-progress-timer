@@ -43,6 +43,7 @@ ProgressTimer.prototype.start = function(position, duration) {
     this._callback(this._initialPosition, this._duration);
     this._running = true;
     this._initialUpdate();
+    return this;
 };
 
 ProgressTimer.prototype.resume = function() {
@@ -50,14 +51,17 @@ ProgressTimer.prototype.resume = function() {
         var state = this._state;
         this.start(state.previousPosition, state.duration);
     }
+    return this;
 };
 
 ProgressTimer.prototype.stop = function() {
     this._running = false;
+    return this;
 };
 
 ProgressTimer.prototype.reset = function() {
     this.start(0, 0);
+    return this;
 };
 
 ProgressTimer.prototype._initialize = function(position, duration) {
