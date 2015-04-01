@@ -30,7 +30,7 @@ function ProgressTimer(options) {
                      options.disableRequestAnimationFrame|| false;
 
     if (!this._fallback) {
-        this._initialUpdate = this._scheduleAnimationFrame;
+        this._callUpdate = this._scheduleAnimationFrame;
         this._scheduleUpdate = this._scheduleAnimationFrame;
     }
 
@@ -62,7 +62,7 @@ ProgressTimer.prototype.set = function(position, duration) {
 
 ProgressTimer.prototype.start = function() {
     this._running = true;
-    this._initialUpdate(this._state);
+    this._callUpdate(this._state);
     return this;
 };
 
@@ -77,13 +77,13 @@ ProgressTimer.prototype.reset = function() {
     return this.set(0, Infinity);
 };
 
-ProgressTimer.prototype._initialUpdate = function(state) {
-    this._update();
+ProgressTimer.prototype._callUpdate = function(state) {
+    this._update(now());
 };
 
 ProgressTimer.prototype._scheduleUpdate = function(state) {
     var adjustedTimeout = state.previousTimestamp + this._updateRate - now();
-    setTimeout(this._update.bind(this), adjustedTimeout);
+    setTimeout(this._callUpdate.bind(this), adjustedTimeout);
 };
 
 ProgressTimer.prototype._scheduleAnimationFrame = function(state) {
@@ -94,8 +94,6 @@ ProgressTimer.prototype._update = function(timestamp) {
     if (!this._running) {
         return;
     }
-
-    timestamp = typeof timestamp !== 'undefined' ? timestamp : now();
 
     var state = this._state;
     state.initialTimestamp = state.initialTimestamp || timestamp;
