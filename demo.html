@@ -30,8 +30,8 @@
 
             var timer = new ProgressTimer({
                 callback: function(position, duration) {
-                  pos.innerHTML = format(position);
-                  dur.innerHTML = format(duration || 0);
+                  pos.textContent = format(position);
+                  dur.textContent = format(duration || 0);
                   if (duration > 0) {
                       inner.style.width = ((position/duration)*100) + '%';
                   } else {
