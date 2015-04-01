@@ -50,7 +50,6 @@ ProgressTimer.prototype.set = function(position, duration) {
 
     this._state = {
         initialTimestamp: null,
-        previousTimestamp: null,
         initialPosition: position,
         previousPosition: position,
         duration: duration
@@ -81,12 +80,12 @@ ProgressTimer.prototype._callUpdate = function(state) {
     this._update(now());
 };
 
-ProgressTimer.prototype._scheduleUpdate = function(state) {
-    var adjustedTimeout = state.previousTimestamp + this._updateRate - now();
+ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
+    var adjustedTimeout = timestamp + this._updateRate - now();
     setTimeout(this._callUpdate.bind(this), adjustedTimeout);
 };
 
-ProgressTimer.prototype._scheduleAnimationFrame = function(state) {
+ProgressTimer.prototype._scheduleAnimationFrame = function(timestamp) {
     window.requestAnimationFrame(this._update.bind(this));
 };
 
@@ -97,7 +96,6 @@ ProgressTimer.prototype._update = function(timestamp) {
 
     var state = this._state;
     state.initialTimestamp = state.initialTimestamp || timestamp;
-    state.previousTimestamp = timestamp;
 
     var position = Math.floor(
         state.initialPosition + (timestamp - state.initialTimestamp));
@@ -108,7 +106,7 @@ ProgressTimer.prototype._update = function(timestamp) {
             this._callback(position, state.duration);
             state.previousPosition = position;
         }
-        this._scheduleUpdate(state);
+        this._scheduleUpdate(timestamp);
     } else {
         this._running = false;
         this._callback(state.duration, state.duration);
