@@ -116,10 +116,9 @@ ProgressTimer.prototype._update = function(timestamp) {
     }
 };
 
-if(typeof module !== 'undefined'){
+if(typeof module !== 'undefined') {
     module.exports = ProgressTimer;
-}
-else{
+} else {
     window.ProgressTimer = ProgressTimer;
 }
 
