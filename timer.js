@@ -101,17 +101,18 @@ ProgressTimer.prototype._update = function(timestamp) {
     state.initialTimestamp = state.initialTimestamp || timestamp;
 
     var position = state.initialPosition + timestamp - state.initialTimestamp;
+    var duration = state.duration;
 
-    if (position < state.duration || state.duration === null) {
+    if (position < duration || duration === null) {
         var delta = position - state.previousPosition;
         if (delta >= this._updateRate || this._fallback) {
-            this._callback(Math.floor(position), state.duration);
+            this._callback(Math.floor(position), duration);
             state.previousPosition = position;
         }
         this._scheduleUpdate(timestamp);
     } else {
         this._running = false;
-        this._callback(state.duration, state.duration);
+        this._callback(duration, duration);
     }
 };
 
