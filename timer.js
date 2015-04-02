@@ -64,7 +64,7 @@ ProgressTimer.prototype.set = function(position, duration) {
 
 ProgressTimer.prototype.start = function() {
     this._running = true;
-    this._callUpdate(this._state);
+    this._callUpdate();
     return this;
 };
 
@@ -79,7 +79,7 @@ ProgressTimer.prototype.reset = function() {
     return this.set(0, Infinity);
 };
 
-ProgressTimer.prototype._callUpdate = function(state) {
+ProgressTimer.prototype._callUpdate = function() {
     this._update(now());
 };
 
@@ -88,7 +88,7 @@ ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
     setTimeout(this._boundCallUpdate, adjustedTimeout);
 };
 
-ProgressTimer.prototype._scheduleAnimationFrame = function(timestamp) {
+ProgressTimer.prototype._scheduleAnimationFrame = function() {
     window.requestAnimationFrame(this._boundUpdate);
 };
 
