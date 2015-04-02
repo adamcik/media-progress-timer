@@ -100,13 +100,12 @@ ProgressTimer.prototype._update = function(timestamp) {
     var state = this._state;
     state.initialTimestamp = state.initialTimestamp || timestamp;
 
-    var position = Math.floor(
-        state.initialPosition + (timestamp - state.initialTimestamp));
+    var position = state.initialPosition + timestamp - state.initialTimestamp;
 
     if (position < state.duration || state.duration === null) {
         var delta = position - state.previousPosition;
         if (delta >= this._updateRate || this._fallback) {
-            this._callback(position, state.duration);
+            this._callback(Math.floor(position), state.duration);
             state.previousPosition = position;
         }
         this._scheduleUpdate(timestamp);
