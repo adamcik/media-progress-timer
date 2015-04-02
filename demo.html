@@ -2,50 +2,164 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Progress timer demo</title>
-    <script type="text/javascript" src="timer.js"></script>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
     <style type="text/css">
-      .progress {
-        height: 10px;
-        width: 100%;
-        border: 1px solid #666;
-        border-radius: 2px;
+      #duration {
+        float: right;
       }
-      .progress div {
-          height: 10px;
-          background: #CCC;
+      #log {
+        max-height: 30em;
       }
-      .duration {
-          float: right;
+      .progress .progress-bar {
+        -webkit-transition: none;
+        -moz-transition: none;
+        -ms-transition: none;
+        -o-transition: none;
+        transition: none;
       }
     </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Media progress timer</h1>
+      <div>
+        <span id="duration" class="pull-right">00:00:000</span>
+        <span id="position">00:00:000</span>
+        <div class="progress">
+          <div id="progress" class="progress-bar"></div>
+        </div>
+      </div>
+      <form id="controls">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Update rate</label>
+              <input name="updateRate" value="10" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>
+                Disable <abbr title="requestAnimationFrame">RAF</abbr>
+              </label>
+              <select class="form-control" name="disableRAF">
+                <option value="false">false</option>
+                <option value="true">true</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <div>
+                <button name="action" value="initialize" class="btn btn-default">
+                  Re-initialize
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label>Position</label>
+              <input name="position" value="0" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Duration</label>
+              <input name="duration" value="60000" class="form-control" />
+            </div>
+            <div class="form-group">
+              <button name="action" value="set"   class="btn btn-default">Set</button>
+              <button name="action" value="start" class="btn btn-default">Start</button>
+              <button name="action" value="stop"  class="btn btn-default">Stop</button>
+              <button name="action" value="reset" class="btn btn-default">Reset</button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <pre id="log" class="well"></pre>
+    </div>
+    <script type="text/javascript" src="timer.js"></script>
     <script type="text/javascript">
-      var timers = [];
-      window.onload = function() {
-        var examples = document.querySelectorAll('.example');
-        for (var i=0; i < examples.length; i++) {
-          (function(example) {
-            var inner = example.querySelector('.progress div');
-            var pos = example.querySelector('.position');
-            var dur = example.querySelector('.duration');
+      var timer;
+      var logger = createLogger(document.getElementById('log'));
+      var form = document.getElementById('controls');
+      var progressElement = document.getElementById('progress');
+      var positionElement = document.getElementById('position');
+      var durationElement = document.getElementById('duration');
 
-            var timer = new ProgressTimer({
-                callback: function(position, duration) {
-                  pos.textContent = format(position);
-                  dur.textContent = format(duration || 0);
-                  if (duration > 0) {
-                      inner.style.width = ((position/duration)*100) + '%';
-                  } else {
-                      inner.style.width = null;
-                  }
-                },
-                updateRate: 10
-            });
-            timer.set(parseInt(example.dataset.position) || null,
-                      parseInt(example.dataset.duration) || null).start();
-            timers.push(timer);
-          }(examples[i]));
+      function callback(position, duration) {
+        positionElement.textContent = format(position);
+        durationElement.textContent = format(duration || 0);
+        if (duration > 0) {
+            progressElement.style.width = ((position/duration)*100) + '%';
+        } else {
+            progressElement.style.width = null;
         }
-      };
+      }
+
+      form.addEventListener('click', function(event) {
+        if (event.preventDefault) {
+          event.preventDefault();
+        }
+        if (event.target.name == 'action') {
+          var inputs = this.elements;
+          switch (event.target.value) {
+            case 'start':
+              logger.call(timer, 'start');
+              break;
+            case 'stop':
+              logger.call(timer, 'stop');
+              break;
+            case 'set':
+              var position = toInt(inputs['position'].value);
+              var duration = toInt(inputs['duration'].value);
+              logger.call(timer, 'set', duration === null ?
+                          [position] : [position, duration]);
+              break;
+            case 'reset':
+              logger.call(timer, 'reset');
+              break;
+            case 'initialize':
+              if (timer) {
+                logger.reset();
+                timer.reset();
+              }
+              var updateRate = toInt(inputs['updateRate'].value);
+              var disableRAF = inputs['disableRAF'].value === 'true';
+              logger.log('var timer = new ProgressTimer({\n' +
+                         '  callback: function(position, duration) { },\n' +
+                         '  disableRequestAnimationFrame: ' + disableRAF + ',\n' +
+                         '  updateRate: ' + updateRate + '\n' +
+                         '});');
+              timer = new ProgressTimer({
+                callback: callback, updateRate: updateRate,
+                disableRequestAnimationFrame: disableRAF
+              });
+              break;
+          }
+        }
+        return false;
+      });
+
+      form.querySelector('button[value=initialize]').click();
+      form.querySelector('button[value=set]').click();
+      form.querySelector('button[value=start]').click();
+
+      function createLogger(element) {
+        return {
+          call: function(timer, name, args) {
+            args = typeof args === 'undefined' ? [] : args;
+            this.log('timer.' + name + '(' + args.join(', ') + ');');
+            timer[name].apply(timer, args);
+          },
+          log: function(text) {
+            element.textContent += text + '\n';
+            element.scrollTop = element.scrollHeight;
+          },
+          reset: function() {
+            element.textContent = ''
+          }
+        };
+      }
+
+      function toInt(value) {
+        return value.match(/^\w*\d+\w*$/) ? parseInt(value) : null;
+      }
 
       function format(milliseconds) {
         if (milliseconds === Infinity) {
@@ -66,25 +180,5 @@
         return minutes + ':' + seconds + ':' + milliseconds;
       }
     </script>
-  </head>
-  <body>
-    <code>timer.set(0, null).start()</code>
-    <div class="example" data-position="0">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
-    <code>timer.set(0, 30000).start()</code>
-    <div class="example" data-position="0" data-duration="30000">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
-    <code>timer.set(15000, 50000).start()</code>
-    <div class="example" data-position="15000" data-duration="50000">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
   </body>
 </html>
