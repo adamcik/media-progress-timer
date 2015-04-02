@@ -2,97 +2,18 @@
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <title>Progress timer demo</title>
-    <script type="text/javascript" src="https://rawgit.com/adamcik/media-progress-timer/master/timer.js"></script>
     <style type="text/css">
       body {
-        font-family: sans-serif;
+        margin: 0;
       }
-      .progress {
-        height: 10px;
+      iframe {
+        border: 0;
         width: 100%;
-        border: 1px solid #666;
-        border-radius: 2px;
-      }
-      .progress div {
-          height: 10px;
-          background: #CCC;
-      }
-      .duration {
-          float: right;
+        height: 100%;
       }
     </style>
-    <script type="text/javascript">
-      var timers = [];
-      window.onload = function() {
-        var examples = document.querySelectorAll('.example');
-        for (var i=0; i < examples.length; i++) {
-          (function(example) {
-            var inner = example.querySelector('.progress div');
-            var pos = example.querySelector('.position');
-            var dur = example.querySelector('.duration');
-
-            var timer = new ProgressTimer({
-                callback: function(position, duration) {
-                  pos.innerHTML = format(position);
-                  dur.innerHTML = format(duration || 0);
-                  if (duration > 0) {
-                      inner.style.width = ((position/duration)*100) + '%';
-                  } else {
-                      inner.style.width = null;
-                  }
-                },
-                updateRate: 10
-            });
-            timer.set(parseInt(example.dataset.position) || null,
-                      parseInt(example.dataset.duration) || null).start();
-            timers.push(timer);
-          }(examples[i]));
-        }
-      };
-
-      function format(milliseconds) {
-        if (milliseconds === Infinity) {
-          return '00:00:000';
-        }
-
-        var seconds = Math.floor(milliseconds / 1000);
-        milliseconds = milliseconds % 1000;
-        var minutes = Math.floor(seconds / 60);
-        seconds = seconds % 60;
-
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        seconds = seconds < 10 ? '0' + seconds : seconds;
-        milliseconds = milliseconds < 10  ? '00' + milliseconds :
-                       milliseconds < 100 ? '0' + milliseconds :
-                       milliseconds;
-
-        return minutes + ':' + seconds + ':' + milliseconds;
-      }
-    </script>
   </head>
   <body>
-    <p>
-      For more info see <a href="https://github.com/adamcik/media-progress-timer">
-      https://github.com/adamcik/media-progress-timer</a>
-    </p>
-
-    <code>timer.set(0, null).start()</code>
-    <div class="example" data-position="0">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
-    <code>timer.set(0, 30000).start()</code>
-    <div class="example" data-position="0" data-duration="30000">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
-    <code>timer.set(15000, 50000).start()</code>
-    <div class="example" data-position="15000" data-duration="50000">
-      <div class="progress"><div></div></div>
-      <span class="duration">00:00:000</span>
-      <span class="position">00:00:000</span>
-    </div>
+    <iframe src="https://rawgit.com/adamcik/media-progress-timer/master/demo.html"></iframe>
   </body>
 </html>
