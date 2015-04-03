@@ -17,6 +17,9 @@
         -o-transition: none;
         transition: none;
       }
+      .panel-heading {
+        font-weight: bold;
+      }
     </style>
   </head>
   <body>
@@ -29,53 +32,84 @@
           <div id="progress" class="progress-bar"></div>
         </div>
       </div>
+      <p>
+        Using the controls below you'll be able to experiment with the
+        <code>ProgressTimer</code> API right here in your browser.
+        For more usage info see <a target="_parent" href="https://github.com/adamcik/media-progress-timer">
+          https://github.com/adamcik/media-progress-timer</a>.
+      </p>
+      <pre id="log" class="well"></pre>
       <form id="controls">
         <div class="row">
           <div class="col-md-6">
-            <div class="form-group">
-              <label>Update rate</label>
-              <input name="updateRate" value="10" class="form-control" />
-            </div>
-            <div class="form-group">
-              <label>
-                Disable <abbr title="requestAnimationFrame">RAF</abbr>
-              </label>
-              <select class="form-control" name="disableRAF">
-                <option value="false">false</option>
-                <option value="true">true</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <div>
-                <button name="action" value="initialize" class="btn btn-default">
-                  Re-initialize
-                </button>
+            <div class="panel panel-default">
+              <div class="panel-heading">Create a new instance</div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>Update rate</label>
+                  <input name="updateRate" value="10" class="form-control" />
+                  <span class="help-block">
+                    Sets the minimum number of milliseconds between UI callbacks.
+                  </span>
+                </div>
+                <div class="form-group">
+                  <label>
+                    Disable <abbr title="requestAnimationFrame">RAF</abbr>
+                  </label>
+                  <select class="form-control" name="disableRAF">
+                    <option value="false">false</option>
+                    <option value="true">true</option>
+                  </select>
+                  <span class="help-block">
+                    Forces the use of <code>setTimout</code> based fallback code
+                    on browsers that don't support <code>requestAnimationFrame</code>
+                    (intended for testing).
+                  </span>
+                </div>
+                <div class="form-group">
+                  <div>
+                    <button name="action" value="initialize" class="btn btn-default">
+                      Re-initialize
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group">
-              <label>Position</label>
-              <input name="position" value="0" class="form-control" />
-            </div>
-            <div class="form-group">
-              <label>Duration</label>
-              <input name="duration" value="60000" class="form-control" />
-            </div>
-            <div class="form-group">
-              <button name="action" value="set"   class="btn btn-default">Set</button>
-              <button name="action" value="start" class="btn btn-default">Start</button>
-              <button name="action" value="stop"  class="btn btn-default">Stop</button>
-              <button name="action" value="reset" class="btn btn-default">Reset</button>
+            <div class="panel panel-default">
+              <div class="panel-heading">Call methods on existing instance</div>
+              <div class="panel-body">
+                <div class="form-group">
+                  <label>Position</label>
+                  <input name="position" value="0" class="form-control" />
+                  <span class="help-block">
+                    Current position of timer in milliseconds, used in <code>set</code>
+                    calls.
+                  </span>
+                </div>
+                <div class="form-group">
+                  <label>Duration</label>
+                  <input name="duration" value="60000" class="form-control" />
+                  <span class="help-block">
+                    Current duration of timer in milliseconds, used in <code>set</code>
+                    calls. May be blank, in which case the previously configured
+                    duration will be used.
+                  </span>
+                </div>
+                <div class="form-group">
+                  <div class="btn-group pull-right">
+                    <button name="action" value="start" class="btn btn-default">Start</button>
+                    <button name="action" value="stop"  class="btn btn-default">Stop</button>
+                    <button name="action" value="reset" class="btn btn-default">Reset</button>
+                  </div>
+                  <button name="action" value="set"   class="btn btn-default">Set</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </form>
-      <pre id="log" class="well"></pre>
-      <p>
-        For more info see <a target="_parent" href="https://github.com/adamcik/media-progress-timer">
-          https://github.com/adamcik/media-progress-timer</a>.
-      </p>
     </div>
     <script type="text/javascript" src="timer.js"></script>
     <script type="text/javascript">
@@ -126,7 +160,7 @@
               var updateRate = toInt(inputs['updateRate'].value);
               var disableRAF = inputs['disableRAF'].value === 'true';
               logger.log('var timer = new ProgressTimer({\n' +
-                         '  callback: function(position, duration) { },\n' +
+                         '  callback: function(position, duration) { /* UI code */ },\n' +
                          '  disableRequestAnimationFrame: ' + disableRAF + ',\n' +
                          '  updateRate: ' + updateRate + '\n' +
                          '});');
