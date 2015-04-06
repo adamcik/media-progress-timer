@@ -114,8 +114,8 @@
       var logger = createLogger(document.getElementById('log'));
       var form = document.getElementById('controls');
       var progressElement = document.getElementById('progress');
-      var positionNode = document.createTextNode('00:00:000');
-      var durationNode = document.createTextNode('00:00:000');
+      var positionNode = document.createTextNode('00:00');
+      var durationNode = document.createTextNode('00:00');
 
       document.getElementById('position').appendChild(positionNode);
       document.getElementById('duration').appendChild(durationNode);
@@ -202,21 +202,16 @@
 
       function format(milliseconds) {
         if (milliseconds === Infinity) {
-          return '00:00:000';
+          return '00:00';
         }
 
         var seconds = Math.floor(milliseconds / 1000);
-        milliseconds = milliseconds % 1000;
         var minutes = Math.floor(seconds / 60);
         seconds = seconds % 60;
 
         minutes = minutes < 10 ? '0' + minutes : minutes;
         seconds = seconds < 10 ? '0' + seconds : seconds;
-        milliseconds = milliseconds < 10  ? '00' + milliseconds :
-                       milliseconds < 100 ? '0' + milliseconds :
-                       milliseconds;
-
-        return minutes + ':' + seconds + ':' + milliseconds;
+        return minutes + ':' + seconds;
       }
     </script>
   </body>
