@@ -26,8 +26,8 @@
     <div class="container">
       <h1>Media progress timer</h1>
       <div>
-        <span id="duration" class="pull-right">00:00:000</span>
-        <span id="position">00:00:000</span>
+        <span id="duration" class="pull-right"></span>
+        <span id="position"></span>
         <div class="progress">
           <div id="progress" class="progress-bar"></div>
         </div>
@@ -117,12 +117,16 @@
       var logger = createLogger(document.getElementById('log'));
       var form = document.getElementById('controls');
       var progressElement = document.getElementById('progress');
-      var positionElement = document.getElementById('position');
-      var durationElement = document.getElementById('duration');
+      var positionNode = document.createTextNode('00:00:000');
+      var durationNode = document.createTextNode('00:00:000');
+
+      document.getElementById('position').appendChild(positionNode);
+      document.getElementById('duration').appendChild(durationNode);
 
       function callback(position, duration) {
-        positionElement.textContent = format(position);
-        durationElement.textContent = format(duration || 0);
+        positionNode.nodeValue = format(position);
+        durationNode.nodeValue = format(duration || 0);
+
         if (duration > 0) {
             progressElement.style.width = ((position/duration)*100) + '%';
         } else {
