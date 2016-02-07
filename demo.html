@@ -120,7 +120,7 @@
       document.getElementById('position').appendChild(positionNode);
       document.getElementById('duration').appendChild(durationNode);
 
-      function callback(position, duration) {
+      function callback(position, duration, is_running) {
         positionNode.nodeValue = format(position);
         durationNode.nodeValue = format(duration || 0);
 
@@ -161,7 +161,7 @@
               var updateRate = toInt(inputs['updateRate'].value);
               var disableRAF = inputs['disableRAF'].value === 'true';
               logger.log('var timer = new ProgressTimer({\n' +
-                         '  callback: function(position, duration) { /* UI code */ },\n' +
+                         '  callback: function(position, duration, is_running) { /* UI code */ },\n' +
                          '  disableRequestAnimationFrame: ' + disableRAF + ',\n' +
                          '  updateRate: ' + updateRate + '\n' +
                          '});');

@@ -58,7 +58,7 @@ ProgressTimer.prototype.set = function(position, duration) {
         duration: duration
     };
 
-    this._callback(position, duration);
+    this._callback(position, duration, this._running);
     return this;
 };
 
@@ -106,13 +106,13 @@ ProgressTimer.prototype._update = function(timestamp) {
     if (position < duration || duration === null) {
         var delta = position - state.previousPosition;
         if (delta >= this._updateRate || this._fallback) {
-            this._callback(Math.floor(position), duration);
+            this._callback(Math.floor(position), duration, this._running);
             state.previousPosition = position;
         }
         this._scheduleUpdate(timestamp);
     } else {
         this._running = false;
-        this._callback(duration, duration);
+        this._callback(duration, duration, this._running);
     }
 };
 
