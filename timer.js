@@ -12,6 +12,10 @@ var now = typeof window.performance !== 'undefined' &&
           window.performance.now.bind(window.performance) || Date.now ||
           function() { return new Date().getTime(); };
 
+var warn = function(msg) {
+    setTimeout(function() { throw msg; }, 0);
+};
+
 function ProgressTimer(options) {
     if (!(this instanceof ProgressTimer)) {
         return new ProgressTimer(options);
@@ -23,13 +27,20 @@ function ProgressTimer(options) {
         throw 'ProgressTimer needs a callback to operate.';
     }
 
-    this._running = false;
-    this._updateRate = Math.max(options.updateRate || 100, 10);
-    this._callback = options.callback;
-    this._fallback = typeof window.requestAnimationFrame === 'undefined' ||
-                     options.disableRequestAnimationFrame|| false;
+    if (options.updateRate && !options.fallbackTargetFrameRate) {
+        warn('ProgressTimer no longer supports the updateRate option.');
+        this._fallbackRate = Math.max(options.updateRate, 10);
+    } else {
+        this._fallbackRate = 1000 / (options.fallbackTargetFrameRate || 30);
+    }
 
-    if (!this._fallback) {
+    this._running = false;
+    this._callback = options.callback;
+
+    var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
+                      options.disableRequestAnimationFrame || false;
+
+    if (!useFallback) {
         this._callUpdate = this._scheduleAnimationFrame;
         this._scheduleUpdate = this._scheduleAnimationFrame;
     }
@@ -84,7 +95,7 @@ ProgressTimer.prototype._callUpdate = function() {
 };
 
 ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
-    var adjustedTimeout = timestamp + this._updateRate - now();
+    var adjustedTimeout = Math.round(timestamp + this._fallbackRate - now());
     setTimeout(this._boundCallUpdate, adjustedTimeout);
 };
 
@@ -104,11 +115,8 @@ ProgressTimer.prototype._update = function(timestamp) {
     var duration = state.duration;
 
     if (position < duration || duration === null) {
-        var delta = position - state.previousPosition;
-        if (delta >= this._updateRate || this._fallback) {
-            this._callback(Math.floor(position), duration);
-            state.previousPosition = position;
-        }
+        this._callback(Math.floor(position), duration);
+        state.previousPosition = position;
         this._scheduleUpdate(timestamp);
     } else {
         this._running = false;

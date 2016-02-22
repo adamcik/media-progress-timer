@@ -31,10 +31,11 @@ Usage
     var timer = ProgressTimer({
         // Your callback for updating UI state, required.
         callback: function(position, duration) {
+            /* Your code here */
         },
-        // Target milliseconds between callbacks, default: 100, min: 10.
-        updateRate: 10,
-        // Force the use of the legacy setTimeout fallback, default: false.
+        // Target frame rate when using legacy setTimeout fallback, default: 30.
+        fallbackTargetFrameRate: 30,
+        // Force legacy setTimeout fallback for testing, default: false.
         disableRequestAnimationFrame: false
     });
 
@@ -72,3 +73,10 @@ time position to "fix" the drifting.
 
 There is nothing Mopidy, or even media specific about this code so if it comes
 in handy for some other use cases then awesome :-)
+
+Changelog
+---------
+
+- 3.0.0 (unreleased)
+  - Removed updateRate support from RAF mode and fallback mode.
+  - Added fallbackTargetFrameRate setting to the setTimeout mode.

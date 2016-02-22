@@ -43,10 +43,10 @@
               <div class="panel-heading">Create a new instance</div>
               <div class="panel-body">
                 <div class="form-group">
-                  <label>Update rate</label>
-                  <input name="updateRate" value="10" class="form-control" />
+                  <label>Fallback frame rate</label>
+                  <input name="fallbackTargetFrameRate" value="30" class="form-control" />
                   <span class="help-block">
-                    Sets the minimum number of milliseconds between UI callbacks.
+                    Sets the target FPS for the <code>setTimeout</code> fallback mode.
                   </span>
                 </div>
                 <div class="form-group">
@@ -158,15 +158,16 @@
                 logger.reset();
                 timer.reset();
               }
-              var updateRate = toInt(inputs['updateRate'].value);
+              var fallbackTargetFrameRate = toInt(inputs['fallbackTargetFrameRate'].value);
               var disableRAF = inputs['disableRAF'].value === 'true';
               logger.log('var timer = new ProgressTimer({\n' +
                          '  callback: function(position, duration) { /* UI code */ },\n' +
                          '  disableRequestAnimationFrame: ' + disableRAF + ',\n' +
-                         '  updateRate: ' + updateRate + '\n' +
+                         '  fallbackTargetFrameRate: ' + fallbackTargetFrameRate + '\n' +
                          '});');
               timer = new ProgressTimer({
-                callback: callback, updateRate: updateRate,
+                callback: callback,
+                fallbackTargetFrameRate: fallbackTargetFrameRate,
                 disableRequestAnimationFrame: disableRAF
               });
               break;
