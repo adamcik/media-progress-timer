@@ -35,7 +35,7 @@ function ProgressTimer(options) {
     }
 
     this._running = false;
-    this._callback = options.callback;
+    this._userCallback = options.callback;
 
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       options.disableRequestAnimationFrame || false;
@@ -69,7 +69,7 @@ ProgressTimer.prototype.set = function(position, duration) {
         duration: duration
     };
 
-    this._callback(position, duration);
+    this._userCallback(position, duration);
     return this;
 };
 
@@ -115,12 +115,12 @@ ProgressTimer.prototype._update = function(timestamp) {
     var duration = state.duration;
 
     if (position < duration || duration === null) {
-        this._callback(Math.floor(position), duration);
+        this._userCallback(Math.floor(position), duration);
         state.previousPosition = position;
         this._scheduleUpdate(timestamp);
     } else {
         this._running = false;
-        this._callback(duration, duration);
+        this._userCallback(duration, duration);
     }
 };
 
