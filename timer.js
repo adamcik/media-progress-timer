@@ -42,14 +42,16 @@ function ProgressTimer(options) {
     }
 
     this._running = false;
+    this._boundUpdate = this._update.bind(this);
 
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       options.disableRequestAnimationFrame || false;
-    if (!useFallback) {
+
+    if (useFallback) {
+        this._scheduleUpdate = this._scheduleTimeout;
+    } else {
         this._scheduleUpdate = this._scheduleAnimationFrame;
     }
-
-    this._boundUpdate = this._update.bind(this);
 
     // TODO: document what this initializes
     this.reset();
@@ -107,7 +109,7 @@ ProgressTimer.prototype.reset = function() {
 
 // Internal fallback for scheduling the next update, expects to get called with
 // the timestamp of when we started handling the last frame.
-ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
+ProgressTimer.prototype._scheduleTimeout = function(timestamp) {
     var adjustedTimeout = Math.max(timestamp + this._frameDuration - now(), 0);
     setTimeout(this._boundUpdate, Math.floor(adjustedTimeout));
 };
