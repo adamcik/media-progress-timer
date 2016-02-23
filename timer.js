@@ -116,7 +116,7 @@ ProgressTimer.prototype._callUpdate = function() {
 // Internal fallback for scheduling the next update, expects to get called with
 // the timestamp of when we started handling the last frame.
 ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
-    var adjustedTimeout = Math.round(timestamp + this._fallbackRate - now());
+    var adjustedTimeout = Math.floor(timestamp + this._fallbackRate - now());
     setTimeout(this._boundCallUpdate, adjustedTimeout);
 };
 
