@@ -36,9 +36,9 @@ function ProgressTimer(options) {
 
     if (options.updateRate && !options.fallbackTargetFrameRate) {
         warn('ProgressTimer no longer supports the updateRate option.');
-        this._fallbackRate = Math.max(options.updateRate, 10);
+        this._frameDuration = Math.max(options.updateRate, 1000 / 60);
     } else {
-        this._fallbackRate = 1000 / (options.fallbackTargetFrameRate || 30);
+        this._frameDuration = 1000 / (options.fallbackTargetFrameRate || 30);
     }
 
     this._running = false;
@@ -46,12 +46,9 @@ function ProgressTimer(options) {
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       options.disableRequestAnimationFrame || false;
     if (!useFallback) {
-        this._callUpdate = this._scheduleAnimationFrame;
         this._scheduleUpdate = this._scheduleAnimationFrame;
     }
 
-    // Pre-bind these functions as the get called a lot.
-    this._boundCallUpdate = this._callUpdate.bind(this);
     this._boundUpdate = this._update.bind(this);
 
     // TODO: document what this initializes
@@ -87,7 +84,7 @@ ProgressTimer.prototype.set = function(position, duration) {
 // Marks the timer as running and then requests updates be scheduled.
 ProgressTimer.prototype.start = function() {
     this._running = true;
-    this._callUpdate();
+    this._scheduleUpdate(0);
     return this;
 };
 
@@ -108,16 +105,11 @@ ProgressTimer.prototype.reset = function() {
     return this.set(0, Infinity);
 };
 
-// Internal fallback code for calling the _update method.
-ProgressTimer.prototype._callUpdate = function() {
-    this._update(now());
-};
-
 // Internal fallback for scheduling the next update, expects to get called with
 // the timestamp of when we started handling the last frame.
 ProgressTimer.prototype._scheduleUpdate = function(timestamp) {
-    var adjustedTimeout = Math.floor(timestamp + this._fallbackRate - now());
-    setTimeout(this._boundCallUpdate, adjustedTimeout);
+    var adjustedTimeout = Math.max(timestamp + this._frameDuration - now(), 0);
+    setTimeout(this._boundUpdate, Math.floor(adjustedTimeout));
 };
 
 // Internal modern code path for triggering updates via RAF.
@@ -132,7 +124,11 @@ ProgressTimer.prototype._update = function(timestamp) {
         return;
     }
 
-    var state = this._state;  // Copy the state in case it gets replaced.
+    // Make sure we have timestamp for the legacy case.
+    timestamp = timestamp || now();
+
+    // Copy the state in case it gets replaced by a set call.
+    var state = this._state;
     state.initialTimestamp = state.initialTimestamp || timestamp;
 
     var position = state.initialPosition + timestamp - state.initialTimestamp;
