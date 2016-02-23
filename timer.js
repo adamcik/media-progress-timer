@@ -138,13 +138,15 @@ ProgressTimer.prototype._update = function(timestamp) {
     var position = state.initialPosition + timestamp - state.initialTimestamp;
     var duration = state.duration;
 
-    if (position < duration || duration === null) {
-        this._userCallback(Math.floor(position), duration);
+    // Make sure the callback gets an integer and that 'position <= duration'.
+    this._userCallback(Math.min(Math.floor(position), duration), duration);
+
+    // Keep scheduling if we haven't reached the end.
+    if (position < duration) {
         state.previousPosition = position;
         this._scheduleUpdate(timestamp);
     } else {
         this._running = false;
-        this._userCallback(duration, duration);
     }
 };
 
