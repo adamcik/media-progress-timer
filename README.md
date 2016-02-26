@@ -30,7 +30,7 @@ Usage
 
     var timer = ProgressTimer({
         // Your callback for updating UI state, required.
-        callback: function(position, duration, is_running) {
+        callback: function(position, duration, isRunning) {
         },
         // Target milliseconds between callbacks, default: 100, min: 10.
         updateRate: 10,
