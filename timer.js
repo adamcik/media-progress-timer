@@ -82,7 +82,10 @@ ProgressTimer.prototype.set = function(position, duration) {
         duration: duration
     };
 
-    this._userCallback(position, duration);
+    // Update right away if we don't have anything running.
+    if (this._updateId === null) {
+        this._userCallback(position, duration);
+    }
     return this;
 };
 
