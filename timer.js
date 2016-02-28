@@ -89,27 +89,30 @@ ProgressTimer.prototype.set = function(position, duration) {
     return this;
 };
 
-// Marks the timer as running and then requests updates be scheduled.
+// Start the timer if it is not already running.
 ProgressTimer.prototype.start = function() {
-    this._updateId = this._schedule(0);
+    if (this._updateId === null) {
+        // Make sure to reset the timestamp and position before scheduling to
+        // ensure things are now relative to the new reference times.
+        this._state.initialTimestamp = null;
+        this._state.initialPosition = this._state.previousPosition;
+        this._updateId = this._schedule(0);
+    }
     return this;
 };
 
-// Marks the timer as stopped, and then does and explicit 'set()'. This should
-// both ensure that initialPosition gets set to the current position and make
-// sure the _userCallback gets triggered with this position.
+// Cancel the timer if it us currently tracking progress.
 ProgressTimer.prototype.stop = function() {
-    this._cancel(this._updateId);
-    var state = this._state;
-    // TODO: check if the set() call is really needed any more, might have been
-    // just related to the updateRate option...
-    return this.set(state.previousPosition, state.duration);
+    if (this._updateId !== null) {
+        this._cancel(this._updateId);
+        this._updateId = null;
+    }
+    return this;
 };
 
 // Marks the timer as stopped and sets position to zero and duration to inf.
 ProgressTimer.prototype.reset = function() {
-    this._cancel(this._updateId);
-    return this.set(0, Infinity);
+    return this.stop().set(0, Infinity);
 };
 
 // Internal fallback for scheduling the next update, expects to get called with
