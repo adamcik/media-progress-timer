@@ -57,8 +57,7 @@ function ProgressTimer(options) {
         this._cancel = window.cancelAnimationFrame.bind(window);
     }
 
-    // TODO: document what this initializes
-    this.reset();
+    this.reset(); // Reuse reset code to ensure we start in the same state.
 }
 
 // Updates the timer state to set the position and optionally the duration.
