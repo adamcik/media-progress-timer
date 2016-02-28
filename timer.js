@@ -36,7 +36,6 @@ function ProgressTimer(options) {
     this._updateId = null;
     this._state = null;
 
-    this._boundUpdate = this._update.bind(this);
 
     if (options.updateRate && !options.fallbackTargetFrameRate) {
         warn('ProgressTimer no longer supports the updateRate option.');
@@ -45,16 +44,17 @@ function ProgressTimer(options) {
         this._frameDuration = 1000 / (options.fallbackTargetFrameRate || 30);
     }
 
+    var update = this._update.bind(this);
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       typeof window.cancelAnimationFrame === 'undefined' ||
                       options.disableRequestAnimationFrame || false;
 
     if (useFallback) {
-        this._scheduleUpdate = this._scheduleTimeout;
-        this._cancelUpdate = window.clearTimeout.bind(window);
+        this._schedule = this._scheduleTimeout.bind(this, update);
+        this._cancel = window.clearTimeout.bind(window);
     } else {
-        this._scheduleUpdate = this._scheduleAnimationFrame;
-        this._cancelUpdate = window.cancelAnimationFrame.bind(window);
+        this._schedule = window.requestAnimationFrame.bind(window, update);
+        this._cancel = window.cancelAnimationFrame.bind(window);
     }
 
     // TODO: document what this initializes
@@ -92,7 +92,7 @@ ProgressTimer.prototype.set = function(position, duration) {
 
 // Marks the timer as running and then requests updates be scheduled.
 ProgressTimer.prototype.start = function() {
-    this._updateId = this._scheduleUpdate(0);
+    this._updateId = this._schedule(0);
     return this;
 };
 
@@ -100,7 +100,7 @@ ProgressTimer.prototype.start = function() {
 // both ensure that initialPosition gets set to the current position and make
 // sure the _userCallback gets triggered with this position.
 ProgressTimer.prototype.stop = function() {
-    this._cancelUpdate(this._updateId);
+    this._cancel(this._updateId);
     var state = this._state;
     // TODO: check if the set() call is really needed any more, might have been
     // just related to the updateRate option...
@@ -109,20 +109,15 @@ ProgressTimer.prototype.stop = function() {
 
 // Marks the timer as stopped and sets position to zero and duration to inf.
 ProgressTimer.prototype.reset = function() {
-    this._cancelUpdate(this._updateId);
+    this._cancel(this._updateId);
     return this.set(0, Infinity);
 };
 
 // Internal fallback for scheduling the next update, expects to get called with
 // the timestamp of when we started handling the last frame.
-ProgressTimer.prototype._scheduleTimeout = function(timestamp) {
+ProgressTimer.prototype._scheduleTimeout = function(update, timestamp) {
     var adjustedTimeout = Math.max(timestamp + this._frameDuration - now(), 0);
-    return window.setTimeout(this._boundUpdate, Math.floor(adjustedTimeout));
-};
-
-// Internal modern code path for triggering updates via RAF.
-ProgressTimer.prototype._scheduleAnimationFrame = function() {
-    return window.requestAnimationFrame(this._boundUpdate);
+    return window.setTimeout(update, Math.floor(adjustedTimeout));
 };
 
 // Calls the user callback with the current position/duration and then
