@@ -84,6 +84,7 @@ ProgressTimer.prototype.set = function(position, duration) {
 
     // Update right away if we don't have anything running.
     if (this._updateId === null) {
+        // TODO: Consider wrapping this in a try/catch?
         this._userCallback(position, duration);
     }
     return this;
@@ -135,6 +136,8 @@ ProgressTimer.prototype._update = function(timestamp) {
 
     // Make sure the callback gets an integer and that 'position <= duration'.
     var userPosisition = Math.min(Math.floor(state.position), state.duration);
+
+    // TODO: Consider wrapping this in a try/catch?
     this._userCallback(userPosisition, state.duration);
 
     if (state.position < state.duration) {
