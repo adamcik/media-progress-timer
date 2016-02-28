@@ -27,9 +27,9 @@ function ProgressTimer(options) {
     } else if (typeof options === 'function') {
         options = {'callback': options};
     } else if (typeof options !== 'object') {
-        throw 'ProgressTimer must be called with a callback or options.';
+        throw '"ProgressTimer" must be called with a callback or options.';
     } else if (typeof options.callback !== 'function') {
-        throw 'ProgressTimer needs a callback to operate.';
+        throw '"ProgressTimer" needs a callback to operate.';
     }
 
     this._userCallback = options.callback;
@@ -38,7 +38,7 @@ function ProgressTimer(options) {
 
 
     if (options.updateRate && !options.fallbackTargetFrameRate) {
-        warn('ProgressTimer no longer supports the updateRate option.');
+        warn('"ProgressTimer" no longer supports the updateRate option.');
         this._frameDuration = Math.max(options.updateRate, 1000 / 60);
     } else {
         this._frameDuration = 1000 / (options.fallbackTargetFrameRate || 30);
@@ -63,7 +63,7 @@ function ProgressTimer(options) {
 // Updates the timer state to set the position and optionally the duration.
 ProgressTimer.prototype.set = function(position, duration) {
     if (arguments.length === 0) {
-        throw 'set requires at least a position argument.';
+        throw '"ProgressTimer.set" requires the "position" arugment.';
     } else if (arguments.length === 1) {
         // Fallback to previous duration, whatever that was.
         duration = this._state.duration;
