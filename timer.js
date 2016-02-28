@@ -92,10 +92,6 @@ ProgressTimer.prototype.set = function(position, duration) {
 // Start the timer if it is not already running.
 ProgressTimer.prototype.start = function() {
     if (this._updateId === null) {
-        // Make sure to reset the timestamp and position before scheduling to
-        // ensure things are now relative to the new reference times.
-        this._state.initialTimestamp = null;
-        this._state.initialPosition = this._state.position;
         this._updateId = this._schedule(0);
     }
     return this;
@@ -105,7 +101,10 @@ ProgressTimer.prototype.start = function() {
 ProgressTimer.prototype.stop = function() {
     if (this._updateId !== null) {
         this._cancel(this._updateId);
-        this._updateId = null;
+
+        // Ensure we correctly reset the initial position and timestamp.
+        this.set(this._state.position, this._state.duration)
+        this._updateId = null;  // Last step to avoid callback in set()
     }
     return this;
 };
