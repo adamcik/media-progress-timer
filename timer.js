@@ -122,7 +122,7 @@ ProgressTimer.prototype._scheduleTimeout = function(update, timestamp) {
 };
 
 // Calls the user callback with the current position/duration and then
-// schedules the next update run via _scheduleUpdate if we haven't finished.
+// schedules the next update run via _schedule if we haven't finished.
 ProgressTimer.prototype._update = function(timestamp) {
     var state = this._state;  // We refer a lot to state, this is shorter.
 
