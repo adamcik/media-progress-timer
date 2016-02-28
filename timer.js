@@ -15,7 +15,7 @@ var now = typeof window.performance !== 'undefined' &&
 
 // Helper to warn library users about deprecated features etc.
 var warn = function(msg) {
-    setTimeout(function() { throw msg; }, 0);
+    window.setTimeout(function() { throw msg; }, 0);
 };
 
 // Creates a new timer object, works with both 'new ProgressTimer(options)' and
