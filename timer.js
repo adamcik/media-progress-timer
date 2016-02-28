@@ -33,6 +33,10 @@ function ProgressTimer(options) {
     }
 
     this._userCallback = options.callback;
+    this._updateId = null;
+    this._state = null;
+
+    this._boundUpdate = this._update.bind(this);
 
     if (options.updateRate && !options.fallbackTargetFrameRate) {
         warn('ProgressTimer no longer supports the updateRate option.');
@@ -40,9 +44,6 @@ function ProgressTimer(options) {
     } else {
         this._frameDuration = 1000 / (options.fallbackTargetFrameRate || 30);
     }
-
-    this._updateId = null;
-    this._boundUpdate = this._update.bind(this);
 
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       typeof window.cancelAnimationFrame === 'undefined' ||
