@@ -60,7 +60,8 @@ function ProgressTimer(options) {
     this.reset(); // Reuse reset code to ensure we start in the same state.
 }
 
-// Updates the timer state to set the position and optionally the duration.
+// If called with one argument the previous duration is preserved. Note that
+// the position can be changed while the timer is running.
 ProgressTimer.prototype.set = function(position, duration) {
     if (arguments.length === 0) {
         throw '"ProgressTimer.set" requires the "position" arugment.';
