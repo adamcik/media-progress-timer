@@ -36,20 +36,24 @@ function ProgressTimer(options) {
     this._updateId = null;
     this._state = null;  // Gets initialized by the set() call.
 
+    var frameDuration = 1000 / (options['fallbackTargetFrameRate'] || 30);
+    // TODO: Remove this legacy code path at some point.
     if (options['updateRate'] && !options['fallbackTargetFrameRate']) {
         warn('"ProgressTimer" no longer supports the updateRate option.');
-        this._frameDuration = Math.max(options['updateRate'], 1000 / 60);
-    } else {
-        this._frameDuration = 1000 / (options['fallbackTargetFrameRate'] || 30);
+        frameDuration = Math.max(options['updateRate'], 1000 / 60);
     }
 
-    var update = this._update.bind(this);
+    var update = this._update.bind(this);  // Make sure this works in _update.
+
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       typeof window.cancelAnimationFrame === 'undefined' ||
                       options['disableRequestAnimationFrame'] || false;
 
     if (useFallback) {
-        this._schedule = this._scheduleTimeout.bind(this, update);
+        this._schedule = function(timestamp) {
+            var timeout = Math.max(timestamp + frameDuration - now(), 0);
+            return window.setTimeout(update, Math.floor(timeout));
+        };
         this._cancel = window.clearTimeout.bind(window);
     } else {
         this._schedule = window.requestAnimationFrame.bind(window, update);
@@ -113,13 +117,6 @@ ProgressTimer.prototype.stop = function() {
 // Marks the timer as stopped and sets position to zero and duration to inf.
 ProgressTimer.prototype.reset = function() {
     return this.stop().set(0, Infinity);
-};
-
-// Internal fallback for scheduling the next update, expects to get called with
-// the timestamp of when we started handling the last frame.
-ProgressTimer.prototype._scheduleTimeout = function(update, timestamp) {
-    var adjustedTimeout = Math.max(timestamp + this._frameDuration - now(), 0);
-    return window.setTimeout(update, Math.floor(adjustedTimeout));
 };
 
 // Calls the user callback with the current position/duration and then
