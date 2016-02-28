@@ -34,7 +34,7 @@ function ProgressTimer(options) {
 
     this._userCallback = options['callback'];
     this._updateId = null;
-    this._state = null;
+    this._state = null;  // Gets initialized by the set() call.
 
     if (options['updateRate'] && !options['fallbackTargetFrameRate']) {
         warn('"ProgressTimer" no longer supports the updateRate option.');
