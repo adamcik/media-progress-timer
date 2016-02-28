@@ -28,25 +28,25 @@ function ProgressTimer(options) {
         options = {'callback': options};
     } else if (typeof options !== 'object') {
         throw '"ProgressTimer" must be called with a callback or options.';
-    } else if (typeof options.callback !== 'function') {
+    } else if (typeof options['callback'] !== 'function') {
         throw '"ProgressTimer" needs a callback to operate.';
     }
 
-    this._userCallback = options.callback;
+    this._userCallback = options['callback'];
     this._updateId = null;
     this._state = null;
 
-    if (options.updateRate && !options.fallbackTargetFrameRate) {
+    if (options['updateRate'] && !options['fallbackTargetFrameRate']) {
         warn('"ProgressTimer" no longer supports the updateRate option.');
-        this._frameDuration = Math.max(options.updateRate, 1000 / 60);
+        this._frameDuration = Math.max(options['updateRate'], 1000 / 60);
     } else {
-        this._frameDuration = 1000 / (options.fallbackTargetFrameRate || 30);
+        this._frameDuration = 1000 / (options['fallbackTargetFrameRate'] || 30);
     }
 
     var update = this._update.bind(this);
     var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
                       typeof window.cancelAnimationFrame === 'undefined' ||
-                      options.disableRequestAnimationFrame || false;
+                      options['disableRequestAnimationFrame'] || false;
 
     if (useFallback) {
         this._schedule = this._scheduleTimeout.bind(this, update);
