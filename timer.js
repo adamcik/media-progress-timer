@@ -36,7 +36,6 @@ function ProgressTimer(options) {
     this._updateId = null;
     this._state = null;
 
-
     if (options.updateRate && !options.fallbackTargetFrameRate) {
         warn('"ProgressTimer" no longer supports the updateRate option.');
         this._frameDuration = Math.max(options.updateRate, 1000 / 60);
@@ -79,7 +78,7 @@ ProgressTimer.prototype.set = function(position, duration) {
     this._state = {
         initialTimestamp: null,
         initialPosition: position,
-        previousPosition: position,
+        position: position,
         duration: duration
     };
 
@@ -96,7 +95,7 @@ ProgressTimer.prototype.start = function() {
         // Make sure to reset the timestamp and position before scheduling to
         // ensure things are now relative to the new reference times.
         this._state.initialTimestamp = null;
-        this._state.initialPosition = this._state.previousPosition;
+        this._state.initialPosition = this._state.position;
         this._updateId = this._schedule(0);
     }
     return this;
@@ -126,26 +125,23 @@ ProgressTimer.prototype._scheduleTimeout = function(update, timestamp) {
 // Calls the user callback with the current position/duration and then
 // schedules the next update run via _scheduleUpdate if we haven't finished.
 ProgressTimer.prototype._update = function(timestamp) {
-    // Make sure we have timestamp for the legacy case.
-    timestamp = timestamp || now();
+    var state = this._state;  // We refer a lot to state, this is shorter.
 
-    // Copy the state in case it gets replaced by a set call.
-    var state = this._state;
+    // Make sure setTimeout has a timestamp and store first reference time.
+    timestamp = timestamp || now();
     state.initialTimestamp = state.initialTimestamp || timestamp;
 
-    var position = state.initialPosition + timestamp - state.initialTimestamp;
-    var duration = state.duration;
+    // Recalculate position according to start location and initial reference.
+    state.position = state.initialPosition + timestamp - state.initialTimestamp;
 
     // Make sure the callback gets an integer and that 'position <= duration'.
-    this._userCallback(Math.min(Math.floor(position), duration), duration);
-    state.previousPosition = position;
+    var userPosisition = Math.min(Math.floor(state.position), state.duration);
+    this._userCallback(userPosisition, state.duration);
 
-    if (position < duration) {
-        // Keep scheduling if we haven't reached the end.
-        this._updateId = this._schedule(timestamp);
+    if (state.position < state.duration) {
+        this._updateId = this._schedule(timestamp);  // Schedule update.
     } else {
-        // Signal that we are no longer running.
-        this._updateId = null;
+        this._updateId = null;  // Unset since we didn't reschedule.
     }
 };
 
