@@ -3,7 +3,16 @@
  * Copyright (c) 2015 Thomas Adamcik
  * Licensed under the Apache License, Version 2.0 */
 
-(function() {
+
+(function (root, factory) {
+    if (typeof define === 'function' && define.amd) {
+        define([], factory);
+    } else if (typeof module === 'object' && module.exports) {
+        module.exports = factory();
+    } else {
+        root.ProgressTimer = factory();
+    }
+}(this, function () {
 
 'use strict';
 
@@ -144,10 +153,6 @@ ProgressTimer.prototype._update = function(timestamp) {
     }
 };
 
-if(typeof module !== 'undefined') {
-    module.exports = ProgressTimer;
-} else {
-    window.ProgressTimer = ProgressTimer;
-}
+return ProgressTimer;
 
-}());
+}));
