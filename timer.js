@@ -3,7 +3,6 @@
  * Copyright (c) 2015 Thomas Adamcik
  * Licensed under the Apache License, Version 2.0 */
 
-
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {
         define([], factory);
@@ -15,16 +14,16 @@
 }(this, function () {
     'use strict';
 
-    // Helper function to provide the current time in milliseconds.
+    // Helper function to provide a reference time in milliseconds.
     var now = typeof window.performance !== 'undefined' &&
               typeof window.performance.now !== 'undefined' &&
               window.performance.now.bind(window.performance) || Date.now ||
               function() { return new Date().getTime(); };
 
     // Helper to warn library users about deprecated features etc.
-    var warn = function(msg) {
+    function warn(msg) {
         window.setTimeout(function() { throw msg; }, 0);
-    };
+    }
 
     // Creates a new timer object, works with both 'new ProgressTimer(options)' and
     // just 'ProgressTimer(options). Optionally the timer can also be called with
