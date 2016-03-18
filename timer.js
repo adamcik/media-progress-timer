@@ -25,9 +25,9 @@
         window.setTimeout(function() { throw msg; }, 0);
     }
 
-    // Creates a new timer object, works with both 'new ProgressTimer(options)' and
-    // just 'ProgressTimer(options). Optionally the timer can also be called with
-    // only the callback instead of options.
+    // Creates a new timer object, works with both 'new ProgressTimer(options)'
+    // and just 'ProgressTimer(options). Optionally the timer can also be
+    // called with only the callback instead of options.
     function ProgressTimer(options) {
         if (!(this instanceof ProgressTimer)) {
             return new ProgressTimer(options);
@@ -50,11 +50,13 @@
             frameDuration = Math.max(options['updateRate'], 1000 / 60);
         }
 
-        var update = this._update.bind(this);  // Make sure this works in _update.
+        var useFallback = (
+            typeof window.requestAnimationFrame === 'undefined' ||
+            typeof window.cancelAnimationFrame === 'undefined' ||
+            options['disableRequestAnimationFrame'] || false);
 
-        var useFallback = typeof window.requestAnimationFrame === 'undefined' ||
-                          typeof window.cancelAnimationFrame === 'undefined' ||
-                          options['disableRequestAnimationFrame'] || false;
+        // Make sure this works in _update.
+        var update = this._update.bind(this);
 
         if (useFallback) {
             this._schedule = function(timestamp) {
@@ -70,8 +72,8 @@
         this.reset(); // Reuse reset code to ensure we start in the same state.
     }
 
-    // If called with one argument the previous duration is preserved. Note that
-    // the position can be changed while the timer is running.
+    // If called with one argument the previous duration is preserved. Note
+    // that the position can be changed while the timer is running.
     ProgressTimer.prototype.set = function(position, duration) {
         if (arguments.length === 0) {
             throw '"ProgressTimer.set" requires the "position" arugment.';
@@ -80,8 +82,8 @@
             duration = this._state.duration;
         } else {
             // Round down and make sure zero and null are treated as inf.
-            duration = Math.floor(
-                Math.max(duration === null ? Infinity : duration || Infinity, 0));
+            duration = Math.floor(Math.max(
+                duration === null ? Infinity : duration || Infinity, 0));
         }
         // Make sure '0 <= position <= duration' always holds.
         position = Math.floor(Math.min(Math.max(position || 0, 0), duration));
@@ -121,7 +123,7 @@
         return this;
     };
 
-    // Marks the timer as stopped and sets position to zero and duration to inf.
+    // Marks the timer as stopped, sets position to zero and duration to inf.
     ProgressTimer.prototype.reset = function() {
         return this.stop().set(0, Infinity);
     };
@@ -135,11 +137,13 @@
         timestamp = timestamp || now();
         state.initialTimestamp = state.initialTimestamp || timestamp;
 
-        // Recalculate position according to start location and initial reference.
-        state.position = state.initialPosition + timestamp - state.initialTimestamp;
+        // Recalculate position according to start location and reference.
+        state.position = (
+            state.initialPosition + timestamp - state.initialTimestamp);
 
-        // Make sure the callback gets an integer and that 'position <= duration'.
-        var userPosisition = Math.min(Math.floor(state.position), state.duration);
+        // Ensure callback gets an integer and that 'position <= duration'.
+        var userPosisition = Math.min(
+            Math.floor(state.position), state.duration);
 
         // TODO: Consider wrapping this in a try/catch?
         this._userCallback(userPosisition, state.duration);
