@@ -77,6 +77,13 @@ in handy for some other use cases then awesome :-)
 Changelog
 ---------
 
-- 3.0.0 (unreleased)
+- 3.0.0 (2016-03-25)
   - Removed updateRate support from RAF mode and fallback mode.
   - Added fallbackTargetFrameRate setting to the setTimeout mode.
+  - Use UMD loader pattern.
+  - Use clearTimeout and cancelAnimationFrame to stop timer.
+  - Stop triggering callback in set when timer is running. This avoids some
+    unintended behaviours and makes the timer more well behaved.
+
+See https://github.com/adamcik/media-progress-timer/releases for previous
+releases.

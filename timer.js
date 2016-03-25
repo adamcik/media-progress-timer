@@ -1,4 +1,4 @@
-/*! timer.js v2.0.2
+/*! timer.js v3.0.0
  * https://github.com/adamcik/media-progress-timer
  * Copyright (c) 2015-2016 Thomas Adamcik
  * Licensed under the Apache License, Version 2.0 */
